@@ -116,7 +116,7 @@ namespace Common_Utilities
             Player.MakingNoise += PlayerHandlers.OnMakingNoise;
             Player.ReloadingWeapon += PlayerHandlers.OnReloading;
             Player.ChangingRole += PlayerHandlers.OnChangingRole;
-            Player.ThrowingItem += PlayerHandlers.OnThrowingItem;
+            Player.ThrowingRequest += PlayerHandlers.OnThrowingRequest;
             Player.InteractingDoor += PlayerHandlers.OnInteractingDoor;
             Player.UsingRadioBattery += PlayerHandlers.OnUsingRadioBattery;
             Player.InteractingElevator += PlayerHandlers.OnInteractingElevator;
@@ -151,7 +151,7 @@ namespace Common_Utilities
             Player.MakingNoise -= PlayerHandlers.OnMakingNoise;
             Player.ReloadingWeapon -= PlayerHandlers.OnReloading;
             Player.ChangingRole -= PlayerHandlers.OnChangingRole;
-            Player.ThrowingItem -= PlayerHandlers.OnThrowingItem;
+            Player.ThrowingRequest -= PlayerHandlers.OnThrowingRequest;
             Player.InteractingDoor -= PlayerHandlers.OnInteractingDoor;
             Player.UsingRadioBattery -= PlayerHandlers.OnUsingRadioBattery;
             Player.InteractingElevator -= PlayerHandlers.OnInteractingElevator;

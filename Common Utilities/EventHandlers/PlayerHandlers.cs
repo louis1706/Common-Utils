@@ -7,7 +7,7 @@ namespace Common_Utilities.EventHandlers
     using System.Linq;
     using Exiled.API.Enums;
     using Exiled.API.Features;
-    using Exiled.Events.EventArgs;
+    using Exiled.Events.EventArgs.Player;
     using MEC;
     using Player = Exiled.API.Features.Player;
     
@@ -77,13 +77,13 @@ namespace Common_Utilities.EventHandlers
 
         public void OnPlayerDied(DiedEventArgs ev)
         {
-            if (ev.Killer != null && _plugin.Config.HealthOnKill != null && _plugin.Config.HealthOnKill.ContainsKey(ev.Killer.Role))
+            if (ev.Player != null && _plugin.Config.HealthOnKill != null && _plugin.Config.HealthOnKill.ContainsKey(ev.Player.Role))
             {
 
-                if (ev.Killer.Health + _plugin.Config.HealthOnKill[ev.Killer.Role] <= ev.Killer.MaxHealth)
-                    ev.Killer.Health += _plugin.Config.HealthOnKill[ev.Killer.Role];
+                if (ev.Player.Health + _plugin.Config.HealthOnKill[ev.Player.Role] <= ev.Player.MaxHealth)
+                    ev.Player.Health += _plugin.Config.HealthOnKill[ev.Player.Role];
                 else
-                    ev.Killer.Health = ev.Killer.MaxHealth;
+                    ev.Player.Health = ev.Player.MaxHealth;
             }
         }
 
@@ -129,20 +129,20 @@ namespace Common_Utilities.EventHandlers
 
         public void OnPlayerHurting(HurtingEventArgs ev)
         {
-            if (_plugin.Config.RoleDamageMultipliers != null && ev.Attacker != null && _plugin.Config.RoleDamageMultipliers.ContainsKey(ev.Attacker.Role))
-                ev.Amount *= _plugin.Config.RoleDamageMultipliers[ev.Attacker.Role];
+            if (_plugin.Config.RoleDamageMultipliers != null && ev.Player is not null && _plugin.Config.RoleDamageMultipliers.ContainsKey(ev.Player.Role))
+                ev.Amount *= _plugin.Config.RoleDamageMultipliers[ev.Player.Role];
 
-            if (_plugin.Config.DamageMultipliers != null && _plugin.Config.DamageMultipliers.ContainsKey(ev.Handler.Type))
+            if (_plugin.Config.DamageMultipliers != null && _plugin.Config.DamageMultipliers.ContainsKey(ev.DamageHandler.Type))
             {
-                ev.Amount *= _plugin.Config.DamageMultipliers[ev.Handler.Type];
+                ev.Amount *= _plugin.Config.DamageMultipliers[ev.DamageHandler.Type];
             }
 
             if (_plugin.Config.PlayerHealthInfo)
                 Timing.CallDelayed(0.5f, () =>
                     ev.Target.CustomInfo = $"({ev.Target.Health}/{ev.Target.MaxHealth}) {(!string.IsNullOrEmpty(ev.Target.CustomInfo) ? ev.Target.CustomInfo.Substring(ev.Target.CustomInfo.LastIndexOf(')') + 1) : string.Empty)}");
 
-            if (ev.Attacker is not null && _plugin.AfkDict.ContainsKey(ev.Attacker))
-                _plugin.AfkDict[ev.Attacker] = 0;
+            if (ev.Player is not null && _plugin.AfkDict.ContainsKey(ev.Player))
+                _plugin.AfkDict[ev.Player] = 0;
         }
 
         public void OnInteractingDoor(InteractingDoorEventArgs ev)
@@ -171,7 +171,7 @@ namespace Common_Utilities.EventHandlers
                 _plugin.AfkDict[ev.Player] = 0;
         }
 
-        public void OnThrowingItem(ThrowingItemEventArgs ev)
+        public void OnThrowingRequest(ThrowingRequestEventArgs ev)
         {
             if (_plugin.AfkDict.ContainsKey(ev.Player))
                 _plugin.AfkDict[ev.Player] = 0;
@@ -185,8 +185,8 @@ namespace Common_Utilities.EventHandlers
 
         public void OnShooting(ShootingEventArgs ev)
         {
-            if (_plugin.AfkDict.ContainsKey(ev.Shooter))
-                _plugin.AfkDict[ev.Shooter] = 0;
+            if (_plugin.AfkDict.ContainsKey(ev.Player))
+                _plugin.AfkDict[ev.Player] = 0;
         }
 
         public void OnUsingItem(UsingItemEventArgs ev)

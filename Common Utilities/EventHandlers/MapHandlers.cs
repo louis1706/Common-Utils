@@ -5,7 +5,9 @@ namespace Common_Utilities.EventHandlers
     using System.Linq;
     using Exiled.API.Enums;
     using Exiled.API.Features.Items;
+    using Exiled.API.Features.Pickups;
     using Exiled.Events.EventArgs;
+    using Exiled.Events.EventArgs.Scp914;
     using InventorySystem.Items.Firearms;
     using MEC;
     using UnityEngine;
@@ -16,20 +18,20 @@ namespace Common_Utilities.EventHandlers
         private readonly Plugin _plugin;
         public MapHandlers(Plugin plugin) => this._plugin = plugin;
         
-        public void OnScp914UpgradingItem(UpgradingItemEventArgs ev)
+        public void OnScp914UpgradingItem(UpgradingPickupEventArgs ev)
         {
             if (_plugin.Config.Scp914ItemChanges != null && _plugin.Config.Scp914ItemChanges.ContainsKey(ev.KnobSetting))
             {
                 foreach ((ItemType sourceItem, ItemType destinationItem, int chance) in _plugin.Config.Scp914ItemChanges[ev.KnobSetting])
                 {
-                    if (sourceItem != ev.Item.Type)
+                    if (sourceItem != ev.Pickup.Type)
                         continue;
 
                     int r = _plugin.Rng.Next(100);
-                    Log.Debug($"{nameof(OnScp914UpgradingItem)}: SCP-914 is trying to upgrade a {ev.Item.Type}. {sourceItem} -> {destinationItem} ({chance}). Should process: {r <= chance} ({r})", _plugin.Config.Debug);
+                    Log.Debug($"{nameof(OnScp914UpgradingItem)}: SCP-914 is trying to upgrade a {ev.Pickup.Type}. {sourceItem} -> {destinationItem} ({chance}). Should process: {r <= chance} ({r})", _plugin.Config.Debug);
                     if (r <= chance)
                     {
-                        UpgradeItem(ev.Item, destinationItem, ev.OutputPosition);
+                        UpgradeItem(ev.Pickup, destinationItem, ev.OutputPosition);
                         ev.IsAllowed = false;
                         break;
                     }
@@ -76,7 +78,7 @@ namespace Common_Utilities.EventHandlers
                             foreach (Item item in ev.Player.Items.ToList())
                             {
                                 ev.Player.RemoveItem(item, false);
-                                item.Spawn(ev.OutputPosition);
+                                item.CreatePickup(ev.OutputPosition);
                             }
                         
                         ev.Player.SetRole(destinationRole, SpawnReason.ForceClass, keepInventory);
@@ -155,12 +157,12 @@ namespace Common_Utilities.EventHandlers
             if (newItem != ItemType.None)
             {
                 Item item = Item.Create(newItem);
-                if (oldItem.Base is FirearmPickup firearmPickup && item is Firearm firearm)
+                if (oldItem.Base is InventorySystem.Items.Firearms.FirearmPickup firearmPickup && item is Firearm firearm)
                     firearm.Ammo = firearmPickup.NetworkStatus.Ammo <= firearm.MaxAmmo
                         ? firearmPickup.NetworkStatus.Ammo
                         : firearm.MaxAmmo;
 
-                item.Spawn(pos);
+                item.CreatePickup(pos);
             }
 
             oldItem.Destroy();

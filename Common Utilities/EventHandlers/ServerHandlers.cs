@@ -5,6 +5,8 @@ namespace Common_Utilities.EventHandlers
     using Exiled.API.Features;
     using Exiled.API.Features.Items;
     using Exiled.Events.EventArgs;
+    using Exiled.Events.EventArgs.Server;
+    using Exiled.Events.EventArgs.Warhead;
     using InventorySystem.Items.Pickups;
     using MEC;
     using UnityEngine;
@@ -73,7 +75,7 @@ namespace Common_Utilities.EventHandlers
             yield return Timing.WaitForSeconds(1f);
 
             foreach (Item item in items)
-                item.Spawn(player.Position, default);
+                item.CreatePickup(player.Position, default);
         }
 
         public void OnWaitingForPlayers()
