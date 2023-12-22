@@ -25,7 +25,7 @@ public class Plugin : Plugin<Config>
 
     public override string Name => "Common Utilities";
 
-    public override string Author => "Joker119";
+    public override string Author => "Exiled-Team";
 
     public override Version RequiredExiledVersion { get; } = new(8, 0, 0);
 
